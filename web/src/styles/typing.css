@@ -1,0 +1,12 @@
+.typing:after {
+	-webkit-animation: blink 1s steps(5,start) infinite;
+	animation: blink 1s steps(5,start) infinite;
+	content: "▋";
+	margin-left: .25rem;
+	vertical-align: baseline;
+}
+@keyframes blink {
+    to {
+     visibility:hidden
+    }
+   }

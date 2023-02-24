@@ -7,6 +7,7 @@ import Pages from 'vite-plugin-pages'
 import YamlImport from 'vite-plugin-yaml2'
 import AutoImport from 'unplugin-auto-import/vite'
 import Unocss from 'unocss/vite'
+import devtools from 'solid-devtools/vite'
 
 export default defineConfig({
   resolve: {
@@ -18,6 +19,10 @@ export default defineConfig({
   plugins: [
     // https://github.com/antfu/unocss
     // see unocss.config.ts for config
+    devtools({
+      /* additional options */
+      autoname: true, // e.g. enable autoname
+    }),
     Unocss(),
 
     Solid(),

@@ -24,7 +24,7 @@ export default defineConfig({
       cssExtend: {
         '.prose>p': {
           margin: '0',
-          color: 'rgb(55, 65, 81)'
+          color: 'rgb(55, 65, 81)',
         },
         'code': {
           color: '#8b5cf6',

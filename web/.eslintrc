@@ -1,3 +1,7 @@
 {
-    "extends": "@antfu/eslint-config-ts"
+    "extends": "@antfu/eslint-config-ts",
+    "rules":{
+        "no-console": "off",
+        "indent": ["error", 4]
+    }
 }

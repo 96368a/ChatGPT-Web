@@ -8,8 +8,8 @@ export default function Index() {
     if (name())
       navigate(`/hi/${encodeURIComponent(name())}`)
   }
-  onMount(()=>{
-    navigate(`/chat`)
+  onMount(() => {
+    navigate('/chat')
   })
 
   return (

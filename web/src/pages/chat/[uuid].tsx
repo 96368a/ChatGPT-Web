@@ -1,49 +1,59 @@
-import Icon from "~/components/chat/Icon";
-import Typing from "~/components/chat/Typing";
+import { getConversationsHistory } from '~/api'
+import Typing from '~/components/chat/AiMessage'
+import UserMessage from '~/components/chat/UserMessage'
+import { useData } from '~/components/DataStore'
+
 
 export default function Chat() {
+    const navigate = useNavigate()
+    const { uuid } = useParams<{ uuid: string }>()
+    if (!uuid||!/[a-z,0-9,-]{36}/.test(uuid)) {
+        navigate('/')
+    }
+    const [data, { addConversations }] = useData()
+    onMount(() => {
+        getConversationsHistory(uuid).then((res) => {
+            const mapping = res.mapping
+            const current_node = res.current_node
+            let node = mapping[current_node]
+            while(node){
+                if(node.message&&node.message.author.role!=='system'){
+                    console.log(node);
+                    addConversations(uuid, {
+                        id: node.id,
+                        msg: node.message.content.parts.toString(),
+                        role: node.message.author.role,
+                        parent: node.parent,
+                    })
+                }
+                node = mapping[node.parent]
+            }
+        })
+    })
 
-    // let text = "今天主要的工作内容是熟悉项目的结构与代码。通过对代码的深入学习，我对项目的整体框架有了更清晰的认识，并对其中的一些细节问题进行了修复。在代码中发现了一些潜在的问题，并针对这些问题提出了一些改进的建议，以便于提高项目的效率和可维护性。在工作中，我与同事紧密协作，共同解决了一些技术难题，提升了团队的整体效率。通过今天的工作，我对项目有了更深入的理解，并为以后的开发工作打下了良好的基础。"
-    let text = "";
+    const messages = createMemo(() => {
+        const d = data.filter((d) => d.conversation_id === uuid)
+        if (d.length) {
+            return d[0].messages
+        }
+        return []
+    })
 
     return (
         <div class="flex-1 overflow-hidden">
             <div class="relative h-full dark:bg-gray-800">
                 <div class="overflow-y-auto h-full w-full">
-                    <div class="flex flex-col items-center text-sm dark:bg-gray-800">
-                        <div
-                            class="w-full border-b border-black/10 dark:border-gray-900/50 text-gray-800 dark:text-gray-100 group dark:bg-gray-800">
-                            <div
-                                class="text-base gap-4 md:gap-6 m-auto md:max-w-2xl lg:max-w-2xl xl:max-w-3xl p-4 md:py-6 flex lg:px-0">
-                                <div class="w-[30px] flex flex-col relative items-end">
-                                    <div class="relative flex">
-                                        <span class="rounded-sm overflow-hidden">
-                                        <img src="https://cravatar.cn/avatar/be834a18bb31bc355799afb9cb08ef9e" alt="" />
-                                        </span>
-                                    </div>
-                                </div>
-                                <div class="relative flex w-[calc(100%-50px)] flex-col gap-1 md:gap-3 lg:w-[calc(100%-115px)]">
-                                    <div class="flex flex-grow flex-col gap-3">
-                                        <div class="min-h-[20px] flex flex-col items-start gap-4 whitespace-pre-wrap">
-                                            今天的主要工作内容还是在熟悉项目的结构与代码，写100字日报，侧重在工作内容上</div>
-                                    </div>
-                                    <div
-                                        class="text-gray-400 flex self-end lg:self-center justify-center mt-2 gap-3 md:gap-4 lg:gap-1 lg:absolute lg:top-0 lg:translate-x-full lg:right-0 lg:mt-0 lg:pl-2 visible">
-                                        <button
-                                            class="p-1 rounded-md hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-200 disabled:dark:hover:text-gray-400 md:invisible md:group-hover:visible"><svg
-                                                stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24"
-                                                stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4" height="1em"
-                                                width="1em" xmlns="http://www.w3.org/2000/svg">
-                                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                                            </svg></button></div>
-                                    <div class="flex justify-between"></div>
-                                </div>
+                    <For each={messages()}>
+                        {(d, index) =>
+                            <div class="flex flex-col items-center text-sm dark:bg-gray-800">
+                                {d.role === 'user' && <UserMessage text={d.msg} />}
+                                {d.role === 'assistant' && <Typing text={d.msg} speed={0} />}
+                                <Show when={index() == messages().length - 1}>
+                                    <div class="w-full h-32 md:h-48 flex-shrink-0"></div>
+                                </Show>
                             </div>
-                        </div>
-                        <Typing text={text} speed={10}/>
-                        <div class="w-full h-32 md:h-48 flex-shrink-0"></div>
-                    </div>
+                        }
+                    </For>
                 </div>
             </div>
         </div>

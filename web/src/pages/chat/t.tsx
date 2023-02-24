@@ -1,25 +1,22 @@
-import Icon from "~/components/chat/Icon";
+import Icon from '~/components/chat/Icon'
 import '~/styles/typing.css'
 
 export default function Chat() {
-
-    let text = "今天主要的工作内容是熟悉项目的结构与代码。通过对代码的深入学习，我对项目的整体框架有了更清晰的认识，并对其中的一些细节问题进行了修复。在代码中发现了一些潜在的问题，并针对这些问题提出了一些改进的建议，以便于提高项目的效率和可维护性。在工作中，我与同事紧密协作，共同解决了一些技术难题，提升了团队的整体效率。通过今天的工作，我对项目有了更深入的理解，并为以后的开发工作打下了良好的基础。"
-    const speed = 10;
-    const [index, setIndex] = createSignal(0);
+    const text = '今天主要的工作内容是熟悉项目的结构与代码。通过对代码的深入学习，我对项目的整体框架有了更清晰的认识，并对其中的一些细节问题进行了修复。在代码中发现了一些潜在的问题，并针对这些问题提出了一些改进的建议，以便于提高项目的效率和可维护性。在工作中，我与同事紧密协作，共同解决了一些技术难题，提升了团队的整体效率。通过今天的工作，我对项目有了更深入的理解，并为以后的开发工作打下了良好的基础。'
+    const speed = 10
+    const [index, setIndex] = createSignal(0)
     createEffect(() => {
         const typingInterval = setInterval(() => {
             if (index() === text.length) {
-                clearInterval(typingInterval);
-                return;
+                clearInterval(typingInterval)
+                return
             }
-            setIndex(index() + 1);
-            console.log(index());
-            
-        }, speed);
+            setIndex(index() + 1)
+            console.log(index())
+        }, speed)
 
-        return () => clearInterval(typingInterval);
-    });
-
+        return () => clearInterval(typingInterval)
+    })
 
     return (
         <div class="flex-1 overflow-hidden">

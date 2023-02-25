@@ -1,5 +1,6 @@
 export interface Data {
-  conversation_id: string
+  id: string
+  title: string
   messages: Message[]
 }
 export interface Message {

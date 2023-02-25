@@ -1,23 +1,29 @@
 import type { Data, Message } from '~/api/data'
 
 const DataContext = createContext()
-export type DataStore = [Data[], { addConversations: (uuid: string, message: Message) => void }]
+export type DataStore = [Data[],
+  {
+    addMessage: (uuid: string, message: Message) => void,
+    addConversation: (uuid: string, title: string) => void
+  }
+]
 
 export function DataProvider(props: any) {
   const [data, setData] = createStore([] as Data[])
   const store: DataStore = [
     data,
     {
-      addConversations(uuid, message) {
-        if (!data.find((d) => d.conversation_id === uuid)) {
+      addMessage(uuid, message) {
+        if (data.find((d) => d.id === uuid)) {
           setData(produce((data) => {
-            data.push({ conversation_id: uuid, messages: [message] })
-          }))
-        }else{
-          setData(produce((data) => {
-            data.find((d) => d.conversation_id === uuid)!.messages.unshift(message)
+            data.find((d) => d.id === uuid)!.messages.unshift(message)
           }))
         }
+      },
+      addConversation(uuid, title) {
+        setData(produce((data) => {
+          data.push({ id: uuid, title, messages: [] })
+        }))
       }
     },
   ]

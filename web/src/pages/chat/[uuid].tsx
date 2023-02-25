@@ -5,21 +5,36 @@ import { useData } from '~/components/DataStore'
 
 
 export default function Chat() {
+    // 检查uuid是否合法
     const navigate = useNavigate()
-    const { uuid } = useParams<{ uuid: string }>()
+    const [id, setId] = createSignal('')
+    let {uuid} = useParams<{ uuid: string }>()
     if (!uuid||!/[a-z,0-9,-]{36}/.test(uuid)) {
         navigate('/')
     }
-    const [data, { addConversations }] = useData()
+    setId(uuid)
+    const location = useLocation();
+
+// const pathname = createMemo(() => parsePath(location.pathname));
+    createEffect(() => {
+        console.log(location.pathname);
+        let {uuid} = useParams<{ uuid: string }>()
+        setId(uuid)
+    })
+
+    const [data, { addMessage }] = useData()
+
     onMount(() => {
+        // 获取历史消息
         getConversationsHistory(uuid).then((res) => {
             const mapping = res.mapping
             const current_node = res.current_node
+            // 获取最后一条消息，根据parent_id一直往上找，最后存入data
             let node = mapping[current_node]
             while(node){
+                // 只存储用户消息和ai消息
                 if(node.message&&node.message.author.role!=='system'){
-                    console.log(node);
-                    addConversations(uuid, {
+                    addMessage(uuid, {
                         id: node.id,
                         msg: node.message.content.parts.toString(),
                         role: node.message.author.role,
@@ -31,8 +46,9 @@ export default function Chat() {
         })
     })
 
+    // 过滤出当前uuid的消息
     const messages = createMemo(() => {
-        const d = data.filter((d) => d.conversation_id === uuid)
+        const d = data.filter((d) => d.id === uuid)
         if (d.length) {
             return d[0].messages
         }

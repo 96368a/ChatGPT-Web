@@ -34,7 +34,7 @@ export default defineConfig({
     AutoImport({
       imports: [
         'solid-js',
-        'solid-app-router',
+        '@solidjs/router',
         { '@solid-primitives/i18n': ['useI18n'] },
       ],
       dts: 'src/auto-imports.d.ts',

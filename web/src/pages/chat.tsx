@@ -1,12 +1,11 @@
 import { A } from '@solidjs/router'
 import { getConversations } from '~/api'
 import { useData } from '~/components/DataStore'
-import Question from '~/modules/question'
+import UUID from '~/modules/uuid'
 
 export default function Chat() {
     const [text, setText] = createSignal('')
-    const [question, setQuestion] = Question
-
+    const [uuid] = UUID
     const textareaAutoHeight = (e: Event) => {
         const ee = e.target as HTMLTextAreaElement
         // 计算高度
@@ -18,20 +17,43 @@ export default function Chat() {
         if (e.code === 'Enter') {
             // console.log(e.returnValue);
             if (!e.shiftKey) {
+                console.log(text());
+
                 commitQuestion()
                 e.returnValue = false
             }
         }
     }
+    const [data, { addMessage, addConversation }] = useData()
+    const messages = createMemo(() => {
+        const d = data.filter((d) => d.id === uuid())
+        if (d.length) {
+            return d[0].messages
+        }
+        return []
+    })
 
     const commitQuestion = () => {
-        setQuestion(text())
+        addMessage(uuid(), {
+            id: 'xxx',
+            msg: text(),
+            role: 'user',
+            parent: messages()[messages().length - 1].id,
+        })
+        addMessage(uuid(), {
+            id: 'xxxx',
+            msg: "",
+            role: 'assistant',
+            parent: '',
+        })
+        console.log(text());
         setText('')
+
     }
 
-    const [data, { addConversation }] = useData()
 
-    onMount(() => {
+    const initData = () => {
+        if (data.length > 0) return
         getConversations().then((res) => {
             // console.log(res);
             res.forEach((e) => {
@@ -39,8 +61,12 @@ export default function Chat() {
                 addConversation(e.id, e.title)
             })
         })
+    }
+
+    onMount(() => {
+        initData()
     })
-    onCleanup(()=>{
+    onCleanup(() => {
         console.log('cleanup')
     })
 
@@ -59,7 +85,7 @@ export default function Chat() {
                                         data-id="root"
                                         onInput={textareaAutoHeight}
                                         onKeyDown={textaeraEnter}
-                                        onChange={(e) =>
+                                        onKeyUp={(e) =>
                                             setText((e.target as HTMLTextAreaElement).value)
                                         }
                                         value={text()}

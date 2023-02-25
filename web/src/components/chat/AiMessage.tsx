@@ -1,26 +1,29 @@
 import Icon from './Icon'
 import '~/styles/typing.css'
 
-export default function (props: any) {
+export default function (props:{text:string,speed:number}) {
     // let text = "今天主要的工作内容是熟悉项目的结构与代码。通过对代码的深入学习，我对项目的整体框架有了更清晰的认识，并对其中的一些细节问题进行了修复。在代码中发现了一些潜在的问题，并针对这些问题提出了一些改进的建议，以便于提高项目的效率和可维护性。在工作中，我与同事紧密协作，共同解决了一些技术难题，提升了团队的整体效率。通过今天的工作，我对项目有了更深入的理解，并为以后的开发工作打下了良好的基础。"
     // const speed = 10;
-    const text = props.text
-    const speed = props.speed
+    const [local, others]  = splitProps(props, ['text', 'speed'])
     const [typing, setTyping] = createSignal(false)
     const [index, setIndex] = createSignal(0)
     createEffect(() => {
-        if (speed === 0) {
-            setIndex(text.length)
+        if (local.text.length===0) {
+            setTyping(true)
+            return
+        }
+        if (local.speed === 0) {
+            setIndex(local.text.length)
         } else {
             setTyping(true)
             const typingInterval = setInterval(() => {
-                if (index() === text.length) {
+                if (index() === local.text.length) {
                     clearInterval(typingInterval)
                     setTyping(false)
                     return
                 }
                 setIndex(index() + 1)
-            }, speed)
+            }, local.speed)
         }
     })
 
@@ -35,7 +38,7 @@ export default function (props: any) {
                         <div class="min-h-[20px] flex flex-col items-start gap-4 whitespace-pre-wrap">
                             <div class="markdown prose w-full break-words dark:prose-invert light">
                                 <p class="" classList={{ typing: typing() }}>
-                                    {text.substring(0, index())}
+                                    {local.text.substring(0, index())}
                                 </p>
                             </div>
                         </div>

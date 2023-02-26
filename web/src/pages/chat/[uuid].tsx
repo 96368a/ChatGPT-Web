@@ -33,7 +33,7 @@ export default function Chat() {
         // }
     })
     createResource(id, async (source, { value, refetching })=>{
-        console.log("res",source, value, refetching);
+        // console.log("res",source, value, refetching);
         if(messages().length===0){
             await initData()
         }
@@ -62,7 +62,7 @@ export default function Chat() {
                 }
                 node = mapping[node.parent]
             }
-            console.log('msgs',messages);
+            // console.log('msgs',messages);
             addMessages(id(), messages.reverse())
         })
     }
@@ -73,11 +73,9 @@ export default function Chat() {
 
     // 过滤出当前uuid的消息
     const messages = createMemo(() => {
-        const d = data.filter((d) => d.id === id())
-        if (d.length) {
-            return d[0].messages
-        }
-        return []
+        console.log(data.find((d) => d.id === id())?.messages);
+        
+        return data.find((d) => d.id === id())?.messages || []
     })
 
     return (
@@ -88,7 +86,8 @@ export default function Chat() {
                         {(d, index) =>
                             <div class="flex flex-col items-center text-sm dark:bg-gray-800">
                                 {d.role === 'user' && <UserMessage text={d.msg} />}
-                                {d.role === 'assistant' && <Typing text={d.msg} speed={0} />}
+                                {/* {d.msg} */}
+                                {d.role === 'assistant' && <Typing text={d.msg} speed={d?.speed||0} />}
                                 <Show when={index() == messages().length - 1}>
                                     <div class="w-full h-32 md:h-48 flex-shrink-0"></div>
                                 </Show>

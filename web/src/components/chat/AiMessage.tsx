@@ -8,6 +8,8 @@ export default function (props:{text:string,speed:number}) {
     const [typing, setTyping] = createSignal(false)
     const [index, setIndex] = createSignal(0)
     createEffect(() => {
+        console.log("local",local);
+        
         if (local.text.length===0) {
             setTyping(true)
             return

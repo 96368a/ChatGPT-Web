@@ -38,8 +38,10 @@ export function DataProvider(props: any) {
         if (data.find((d) => d.id === uuid)) {
           setData(produce((data) => {
             if(data.find((d) => d.id === uuid)!.messages.find((m) => m.id === msg_id)){
-              data.find((d) => d.id === uuid)!.messages.find((m) => m.id === msg_id)!.msg = message.msg
-              data.find((d) => d.id === uuid)!.messages.find((m) => m.id === msg_id)!.id = message.id
+              let index = data.find((d) => d.id === uuid)!.messages.findIndex((m) => m.id === msg_id)
+              if(index!==-1){
+                data.find((d) => d.id === uuid)!.messages[index] = message
+              }
             }
           }))
         }

@@ -20,7 +20,9 @@ export default defineConfig({
     // https://github.com/antfu/unocss
     // see unocss.config.ts for config
     devtools({
-      /* additional options */
+      targetIDE: 'vscode',
+      componentLocation: true,
+      jsxLocation: true,
       autoname: true, // e.g. enable autoname
     }),
     Unocss(),

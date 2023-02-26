@@ -17,14 +17,12 @@ export default function Chat() {
         if (e.code === 'Enter') {
             // console.log(e.returnValue);
             if (!e.shiftKey) {
-                console.log(text());
-
                 commitQuestion()
                 e.returnValue = false
             }
         }
     }
-    const [data, { addMessage, addConversation }] = useData()
+    const [data, { addMessage, addConversation,setMessage }] = useData()
     const messages = createMemo(() => {
         const d = data.filter((d) => d.id === uuid())
         if (d.length) {
@@ -40,13 +38,35 @@ export default function Chat() {
             role: 'user',
             parent: messages()[messages().length - 1].id,
         })
-        addMessage(uuid(), {
+        let [aiMsg,setAiMsg] = createSignal({
             id: 'xxxx',
-            msg: "",
+            msg: "344",
             role: 'assistant',
             parent: '',
+            speed: 0
         })
-        console.log(text());
+        let ai_msg = {
+            id: 'xxxx',
+            msg: "344",
+            role: 'assistant',
+            parent: '',
+            speed: 0
+        }
+        addMessage(uuid(), ai_msg)
+
+        setTimeout(() => {
+
+            setAiMsg({
+                id: 'xxxxx',
+                msg: "这是一条测试消息~",
+                role: 'assistant',
+                parent: '',
+                speed: 200
+            })
+            console.log("aiMsg",aiMsg());
+            
+            setMessage(uuid(),'xxxx',aiMsg())
+        }, 2000);
         setText('')
 
     }

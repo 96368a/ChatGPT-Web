@@ -8,4 +8,5 @@ export interface Message {
   msg: string
   role: string
   parent: string
+  speed?: number
 }
